@@ -1,0 +1,7 @@
+# Run Celery
+    celery -A NAMEOFINSTANCE worker --loglevel=info
+
+    celery -A core worker --loglevel=info
+
+    [Windows OS]
+    celery -A core worker -l info --pool=solo

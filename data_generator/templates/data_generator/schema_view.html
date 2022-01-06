@@ -1,0 +1,95 @@
+{% extends "data_generator/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+        <div class="row mt-4">
+
+            <h3>Datasets</h3>
+            <div class="form-group col-md-3">
+                <form method="POST" name="row-form" id="row_form">
+                    {% csrf_token %}
+
+                    {% for field in form.visible_fields %}
+                        <label class="form-label">{{ field.label }}</label>
+                        <input type="number" name="rows" id="row_form">
+
+                       <!-- {{ field }} -->
+
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-success mt-2" onclick="return getData()">Generate</button>
+
+                </form>
+            </div>
+
+            <table class="table mt-3">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Create</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for file in schema.schema_files.all %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ file.created_at }}</td>
+                        <td>
+                           <!--  <span class="badge bg-{% if file.status == 'Ready' %}success{% elif file.status == 'Processing' %}primary{% else %}danger{% endif %}">{{ file.status }}</span> -->
+                           {% if file.status == 'Processing' %}
+                                <div class='progress-wrapper'>
+                                  <div id='progress-bar' class='progress-bar' style="background-color: #68a9ef; width: 0%;"></div>
+                                </div>
+                                <div id="progress-bar-message"></div>
+                                <div id="celery-result"></div>
+                            {% elif file.status == 'Ready' %}
+                                <span class="badge bg-success">{{ file.status }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{file.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if file.status == 'Ready' %}
+                                <a href="{{ file.file }}">Download</a>
+                            {% endif %}
+                            <span>
+                                <a class="text-danger" href="{% url 'data_generator:delete_csv' schema.id file.id %}">Delete</a>
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+            {% if schema.schema_files.count == 0 %}
+            	<h4>No files yet....</h4>
+            {% endif %}
+        </div>
+    </div>
+
+
+    {% block custom_scripts %}
+    {% if task_id %}
+    <script>
+
+        // vanilla JS version
+        document.addEventListener("DOMContentLoaded", function () {
+          var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+          CeleryProgressBar.initProgressBar(progressUrl);
+        });
+
+        function getData(e) {
+            e.preventDefault();
+        }
+
+    </script>
+    {% endif %}
+    {% endblock custom_scripts %}
+
+
+{% endblock %}

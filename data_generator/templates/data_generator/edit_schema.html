@@ -1,0 +1,48 @@
+{% extends 'data_generator/base.html' %}
+
+
+{% block content %}
+
+	<div class="container">
+        <div class="row mt-4">
+            <form method="POST" action="" class="form-inline">
+                {% csrf_token %}
+                {{ schema_form.as_p }}
+
+                <hr>
+                <div id="form-container">
+                    {{ formset.management_form }}
+                    {% for forms in formset %}
+                        {% for form in formset %}
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                            <!-- form.visible fields go here -->
+                        {% endfor %}
+                    <div class="row schema-form mt-3">
+                    	{% for field in forms.visible_fields %}
+                        <div class="form-group col">
+                            <label class="form-label">{{ field.label }}</label>
+                            {{ field }}
+
+                            {% for error in field.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                       	{% endfor %}
+                       	<button class=" mt-4 btn btn-danger btn-sm col-md remove-form" type="button">Delete</button>
+                    	
+                    </div>
+                    {% endfor %}
+                    <button id="add-form" class="btn btn-primary mt-2" type="button">Add Another column</button>
+                    <button class="btn btn-success float-right mt-2" type="submit">Update</button>
+                </div>
+    		</form>
+    	</div>
+    </div>	
+{% endblock %}
+
+
+{% block custom_scripts %}
+    {% include 'js/add_extra_form_field.html' %}
+{% endblock custom_scripts %}

@@ -1,0 +1,52 @@
+<script>
+    function updateElementIndex(el, prefix, ndx) {
+        var id_regex = new RegExp('(' + prefix + '-\\d+)');
+        var replacement = prefix + '-' + ndx;
+        if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+        if (el.id) el.id = el.id.replace(id_regex, replacement);
+        if (el.name) el.name = el.name.replace(id_regex, replacement);
+    }
+
+    let schemaForm = document.querySelectorAll(".schema-form")
+    let container = document.querySelector("#form-container")
+    let addButton = document.querySelector("#add-form")
+    let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+
+    let formNum = schemaForm.length - 1
+    addButton.addEventListener('click', addForm)
+
+    function addForm(e) {
+        e.preventDefault()
+
+        let newForm = schemaForm[0].cloneNode(true)
+        let formRegex = RegExp(`form-(\\d){1}-`, 'g')
+
+        formNum++
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
+        container.insertBefore(newForm, addButton)
+
+        totalForms.setAttribute('value', `${formNum + 1}`)
+    }
+
+    function deleteForm(prefix, btn) {
+        var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+        if (total > 4) {
+            btn.closest('.schema-form').remove();
+            var forms = $('.schema-form');
+            $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+            for (var i = 0, formCount = forms.length; i < formCount; i++) {
+                $(forms.get(i)).find(':input').each(function () {
+                    updateElementIndex(this, prefix, i);
+                });
+            }
+        }
+        return false;
+    }
+
+    $(document).on('click', '.remove-form', function (e) {
+        e.preventDefault();
+        deleteForm('form', $(this));
+        return false;
+    });
+
+</script>

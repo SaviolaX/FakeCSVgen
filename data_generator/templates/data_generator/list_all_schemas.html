@@ -1,0 +1,48 @@
+{% extends "data_generator/base.html" %}
+
+{% block content %}
+
+<div class="container">
+        <div class="row mt-4">
+
+            <h3>Data schemas</h3>
+            <a class="btn btn-success col-md-2" href="{% url 'data_generator:create_schema' %}">Create schema</a>
+
+            <table class="table mt-3">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Modified</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for schema in schemas %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td><a href="{% url 'data_generator:schema_view' schema.id %}">{{ schema.name }}</a></td>
+                        <td>{{ schema.created_at }}</td>
+                        <td>
+                            <span>
+                                    <a class="text-warning" href="{% url 'data_generator:edit_schema' schema.id %}">Edit</a>
+                            </span>
+
+                            <span>
+                                <a class="text-danger" href="{% url 'data_generator:delete_schema' schema.id %}">Delete</a>
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+            {% if schemas.count == 0 %}
+            	<h4>No schemas yet....</h4>
+            {% endif %}
+        </div>
+    </div>
+
+
+{% endblock %}
