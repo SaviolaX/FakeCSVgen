@@ -1,9 +1,9 @@
 import random
 import csv
 import time
+from django.core.files.storage import default_storage
 
 from celery_progress.backend import ProgressRecorder
-import cloudinary.uploader
 
 from .models import Schema, SchemaStatusChoises, SchemaFile
 from .fake_data_generator import generate_csv_data
@@ -25,7 +25,7 @@ def create_csv_file(self, schema_id, rows):
         ]
         filename = f"/schema-{schema.id}--{number}.csv"
 
-        with open(filename, "w", encoding='utf-8') as csv_file:
+        with default_storage.open(filename, "w") as csv_file:
             csv_file.truncate()
             writer = csv.writer(csv_file,
                                 delimiter=schema.separator)
@@ -45,12 +45,8 @@ def create_csv_file(self, schema_id, rows):
                 self.update_state(state='PROGRESS',
                                   meta={'current': i, 'total': rows})
 
-        # uploading file on cloudinary
-        uploaded_file = cloudinary.uploader.upload(filename,
-                                                   resource_type='raw')
-
         # updating model instance
-        schema_file.file = uploaded_file['secure_url']
+        schema_file.file = filename
         schema_file.status = SchemaStatusChoises.READY
         schema_file.save()
         return 'Done'

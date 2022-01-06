@@ -1,11 +1,8 @@
 import os
 from pathlib import Path
 
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 from decouple import config
-import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,8 +33,7 @@ INSTALLED_APPS = [
     'celery',
     'celery_progress',
     'django_celery_results',
-    'cloudinary_storage',
-    'cloudinary',
+    'storages',
 
     'data_generator',
 ]
@@ -84,6 +80,7 @@ DATABASES = {
     }
 }
 
+import dj_database_url
 DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 
@@ -127,18 +124,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = 'cloudinary://221962939478954:PjmL1Gog4m2DqZCVhNvsOmTgxqw@test-cloud-storage'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+AWS_QUERYSTRING_AUTH = False
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+AWS_S3_ACCESS_KEY_ID = config('AWS_S3_ACCESS_KEY')
+AWS_S3_SECRET_ACCESS_KEY = config('AWS_S3_SECRET_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_NAME')
 
-
-cloudinary.config(
-    cloud_name=config('cloud_name'),
-    api_key=config('api_key'),
-    api_secret=config('api_secret'),
-    secure=config('secure')
-)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

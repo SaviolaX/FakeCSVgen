@@ -54,7 +54,7 @@
                         </td>
                         <td>
                             {% if file.status == 'Ready' %}
-                                <a href="{{ file.file }}">Download</a>
+                                <a href="{{ file.file.url }}">Download</a>
                             {% endif %}
                             <span>
                                 <a class="text-danger" href="{% url 'data_generator:delete_csv' schema.id file.id %}">Delete</a>
