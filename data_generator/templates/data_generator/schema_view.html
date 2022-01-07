@@ -39,7 +39,6 @@
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ file.created_at }}</td>
                         <td>
-                           <!--  <span class="badge bg-{% if file.status == 'Ready' %}success{% elif file.status == 'Processing' %}primary{% else %}danger{% endif %}">{{ file.status }}</span> -->
                            {% if file.status == 'Processing' %}
                                 <div class='progress-wrapper'>
                                   <div id='progress-bar' class='progress-bar' style="background-color: #68a9ef; width: 0%;"></div>
