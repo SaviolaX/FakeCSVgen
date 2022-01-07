@@ -1,6 +1,5 @@
 import random
 import csv
-import time
 from django.core.files.storage import default_storage
 
 from celery_progress.backend import ProgressRecorder
@@ -33,7 +32,6 @@ def create_csv_file(self, schema_id, rows):
 
             for i in range(rows):
                 row_to_write = []
-                time.sleep(1)
                 for column in columns:
                     row_to_write.append(
                         " ".join(generate_csv_data(column.id).split()))
